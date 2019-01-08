@@ -13,7 +13,7 @@ table {
 }
 
 td {
-    border: 1px solid lightgray;
+    border: 1px solid #444;
     border-right: none;
     border-bottom: none;
     width: 20px;
@@ -24,11 +24,11 @@ td {
 }
 
 td:last-child {
-    border-right: 1px solid lightgray;
+    border-right: 1px solid #444;
 }
 
 tr:last-child td {
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #444;
 }
 
 td.alive {
