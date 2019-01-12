@@ -52,7 +52,7 @@ class Game {
 
     _init() {
         this._createControls();
-        this._render
+        this._render();
     }
 
     _createControls() {
