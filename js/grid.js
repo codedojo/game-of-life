@@ -78,43 +78,20 @@ class Grid {
     _countNeighbors({ row, col }) {
         let count = 0;
 
-        if (row - 1 >= 0) { // top
-            if (this._grid[row - 1][col].alive) count += 1;
-        }
-
-        if (row - 1 >= 0 && col - 1 >= 0) { // top left
-            if (this._grid[row - 1][col - 1].alive) count += 1;
-        }
-
-        if (row - 1 >= 0 && col + 1 < this.gridCols) { // top right
-            if (this._grid[row - 1][col + 1].alive) count += 1;
-        }
-
-        if (col - 1 >= 0) { // left
-            if (this._grid[row][col - 1].alive) count += 1;
-        }
-
-        if (col + 1 < this.gridCols) { // right
-            if (this._grid[row][col + 1].alive) count += 1;
-        }
-
-        if (row + 1 < this.gridRows) { // bottom
-            if (this._grid[row + 1][col].alive) count += 1;
-        }
-
-        if (row + 1 < this.gridRows && col - 1 >= 0) { // bottom left
-            if (this._grid[row + 1][col - 1].alive) count += 1;
-        }
-
-        if (row + 1 < this.gridRows && col + 1 < this.gridCols) { // bottom right
-            if (this._grid[row + 1][col + 1].alive) count += 1;
-        }
+        if (this._isCellAlive(row - 1, col - 1)) count++; // top left
+        if (this._isCellAlive(row - 1, col)) count++; // top
+        if (this._isCellAlive(row - 1, col + 1)) count++; // top right
+        if (this._isCellAlive(row, col + 1)) count++; // right
+        if (this._isCellAlive(row + 1, col + 1)) count++; // bottom right
+        if (this._isCellAlive(row + 1, col)) count++; // bottom
+        if (this._isCellAlive(row + 1, col - 1)) count++; // bottom left
+        if (this._isCellAlive(row, col - 1)) count++; // left
 
         return count;
     }
 
-    _isNeighborAlive(row, col) {
-        if (!this._grid[row] || !this._grid[col]) return false;
+    _isCellAlive(row, col) {
+        if (!this._grid[row] || !this._grid[row][col]) return false;
 
         return this._grid[row][col].alive;
     }
