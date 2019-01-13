@@ -4,10 +4,17 @@ body {
     margin: 0;
 }
 
-table.grid {
+.grid {
     margin: 2rem auto;
     box-sizing: border-box;
     cursor: pointer;
+}
+
+canvas.grid {
+    display: block;
+}
+
+table.grid {
     border-spacing: 0px;
     table-layout: fixed;
 }

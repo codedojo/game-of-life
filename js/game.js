@@ -1,25 +1,29 @@
-class Game {
-    constructor(gridWidth, gridHeight, gridRows, gridCols, root) {
-        this.gridWidth = gridWidth;
-        this.gridHeight = gridHeight;
-        this.gridRows = gridRows;
-        this.gridCols = gridCols;
-        this.root = root;
+import Grid from './grid.js';
 
-        this.grid = new Grid(gridWidth, gridHeight, gridRows, gridCols);
+export default class Game {
+    constructor(gridRows, gridCols) {
+        this._grid = new Grid(gridRows, gridCols);
         this.isPlaying = false;
         this.baseSpeed = 1000;
         this.speed = 0;
         this.interval = null;
-        this.element = null;
+
+        this.onCellStateChange = Function.prototype;
+        this.onGridStateChange = Function.prototype;
 
         this.next = this.next.bind(this);
+    }
 
-        this._init();
+    toggleCellState(row, col) {
+        const cell = this._grid.toggleCellState(row, col);
+
+        this.onGridStateChange(cell);
     }
 
     next() {
-        this.grid.next();
+        const nextGrid = this._grid.next();
+
+        this.onGridStateChange(nextGrid);
     }
 
     play() {
@@ -32,78 +36,34 @@ class Game {
         this._stopInterval();
     }
 
+    toggle() {
+        if (this.isPlaying) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    }
+
     reset() {
         this.pause();
-        this.grid.reset();
+
+        const resetGrid = this._grid.reset();
+
+        this.onGridStateChange(resetGrid);
     }
 
     randomize() {
         if (this.isPlaying) return;
 
-        this.reset();
-        this.grid.randomize();
+        const randomGrid = this._grid.randomize();
+
+        this.onGridStateChange(randomGrid);
     }
 
     changeSpeed(value) {
         this.speed = value;
         this._stopInterval();
         this._startInterval();
-    }
-
-    _init() {
-        this._createControls();
-        this._render();
-    }
-
-    _createControls() {
-        const startButton = document.createElement('button');
-        startButton.className = 'material-icons';
-        startButton.textContent = 'play_arrow';
-        startButton.addEventListener('click', () => {
-            if (this.isPlaying) {
-                this.pause();
-                startButton.textContent = 'play_arrow';
-            } else {
-                this.play();
-                startButton.textContent = 'pause';
-            }
-        });
-
-        const resetButton = document.createElement('button');
-        resetButton.className = 'material-icons';
-        resetButton.textContent = 'replay';
-        resetButton.addEventListener('click', () => {
-            startButton.textContent = 'play_arrow';
-            this.reset();
-        });
-
-        const randomizeButton = document.createElement('button');
-        randomizeButton.className = 'material-icons';
-        randomizeButton.textContent = 'transform';
-        randomizeButton.addEventListener('click', () => {
-            startButton.textContent = 'play_arrow';
-            this.randomize();
-        });
-
-        const speedSlider = document.createElement('input');
-        speedSlider.type = 'range';
-        speedSlider.min = 0;
-        speedSlider.max = 900;
-        speedSlider.step = 100;
-        speedSlider.value = this.speed;
-        speedSlider.addEventListener('input', () => this.changeSpeed(speedSlider.value));
-
-        const container = document.createElement('div');
-        container.className = 'controls';
-
-        container.append(startButton, resetButton, randomizeButton, speedSlider);
-
-        this.controlsElement = container;
-    }
-
-    _render() {
-        root.appendChild(this.grid.element);
-        root.appendChild(this.controlsElement);
     }
 
     _startInterval() {

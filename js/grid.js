@@ -1,24 +1,28 @@
-class Grid {
-    constructor(gridWidth, gridHeight, gridRows, gridCols) {
-        this.gridWidth = gridWidth;
-        this.gridHeight = gridHeight;
+import Cell from './cell.js';
+
+export default class Grid {
+    constructor(gridRows, gridCols) {
         this.gridRows = gridRows;
         this.gridCols = gridCols;
-        this.cellWidth = gridWidth / gridCols;
-        this.cellHeight = gridHeight / gridRows;
-        this.element = null;
-
         this._grid = [];
         this._nextGrid = [];
 
         this._init();
     }
 
+    toggleCellState(row, col) {
+        const cell = this._grid[row][col];
+
+        cell.toggleState();
+
+        return this._grid;
+    }
+
     next() {
         this._forEachCell(cell => {
             const numberOfNeighbors = this._countNeighbors(cell);
 
-            if (cell.alive) {
+            if (cell.isAlive) {
                 if (numberOfNeighbors < 2) {
                     this._nextGrid[cell.row][cell.col] = false;
                 } else if (numberOfNeighbors === 2 || numberOfNeighbors === 3) {
@@ -34,45 +38,37 @@ class Grid {
         });
 
         this._forEachCell(cell => {
-            cell.alive = this._nextGrid[cell.row][cell.col];
+            cell.isAlive = this._nextGrid[cell.row][cell.col];
             this._nextGrid[cell.row][cell.col] = false;
         });
+
+        return this._grid;
     }
 
     reset() {
-        this._forEachCell(cell => cell.alive = false);
+        this._forEachCell(cell => cell.resetState());
+
+        return this._grid;
     }
 
     randomize() {
-        this._forEachCell(cell => cell.alive = !!Math.round(Math.random()));
+        this._forEachCell(cell => cell.setRandomState());
+
+        return this._grid;
     }
 
     _init() {
-        const table = document.createElement('table');
-
-        table.className = 'grid';
-
         for (let i = 0; i < this.gridRows; i++) {
-            const tr = document.createElement('tr');
-
-            tr.className = 'row';
-
             this._grid[i] = [];
             this._nextGrid[i] = [];
 
             for (let j = 0; j < this.gridCols; j++) {
-                const cell = new Cell(this.cellWidth, this.cellHeight, i, j);
+                const cell = new Cell(i, j);
 
                 this._grid[i][j] = cell;
                 this._nextGrid[i][j] = false;
-
-                tr.appendChild(cell.element);
             }
-
-            table.appendChild(tr);
         }
-
-        this.element = table;
     }
 
     _countNeighbors({ row, col }) {
@@ -93,7 +89,7 @@ class Grid {
     _isCellAlive(row, col) {
         if (!this._grid[row] || !this._grid[row][col]) return false;
 
-        return this._grid[row][col].alive;
+        return this._grid[row][col].isAlive;
     }
 
     _forEachCell(fn) {
